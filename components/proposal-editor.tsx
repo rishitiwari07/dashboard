@@ -210,7 +210,15 @@ export function ProposalEditor({ proposalId }: { proposalId?: string }) {
     if (loading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>;
 
     return (
-        <div className="max-w-5xl mx-auto p-6 space-y-8">
+        <div className="max-w-5xl mx-auto p-6 space-y-8 proposal-print-container">
+            <style dangerouslySetInnerHTML={{__html: `
+                @media print {
+                    @page { size: A4; margin: 20mm; }
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    .proposal-print-container { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
+                    .prose { max-width: 100% !important; }
+                }
+            `}} />
             {/* Header - Hidden on Print */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 print:hidden">
                 <div className="flex items-center gap-4">
@@ -248,8 +256,8 @@ export function ProposalEditor({ proposalId }: { proposalId?: string }) {
                                 </Button>
                             )}
 
-                            <Button variant="outline" onClick={() => window.open(`/proposals/${proposalId}/view`, '_blank')}>
-                                <Printer className="mr-2 h-4 w-4" /> Print
+                            <Button variant="outline" onClick={() => window.open(`/proposals/${proposalId}/print`, "_blank")}>
+                                <Printer className="mr-2 h-4 w-4" /> Print / PDF
                             </Button>
                             <Button onClick={() => setIsEditing(true)}>
                                 Edit

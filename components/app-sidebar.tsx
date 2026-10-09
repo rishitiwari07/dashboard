@@ -485,13 +485,6 @@ export function AppSidebar({
       ],
     },
     {
-      label: "DevOps",
-      items: [
-        { title: "Monitor", url: "/dashboard/monitor", isActive: pathname.startsWith("/dashboard/monitor"), icon: Activity, featureKey: "monitor" },
-        { title: "Deployments", url: "/dashboard/deployment", isActive: pathname.startsWith("/dashboard/deployment"), icon: Layers, badge: sidebarCounts.pendingCommits, featureKey: "deployments" },
-      ],
-    },
-    {
       label: "Work",
       items: [
         { title: "Projects", url: "/dashboard/projects", isActive: pathname.startsWith("/dashboard/projects") && !pathname.includes("/plans"), icon: Briefcase, featureKey: "projects" },
@@ -642,9 +635,6 @@ export function AppSidebar({
         { title: "Reports", url: "/dashboard/todo?tab=reports", isActive: pathname.startsWith("/dashboard/todo") && searchParams?.get("tab") === "reports", icon: BarChart3, featureKey: "todo_reports" },
       ],
     },
-    // DevOps
-    { featureKey: "monitor", section: "DevOps", title: "Monitor", url: "/dashboard/monitor", icon: Activity, isActive: pathname.startsWith("/dashboard/monitor") },
-    { featureKey: "deployments", section: "DevOps", title: "Deployments", url: "/dashboard/deployment", icon: Layers, isActive: pathname.startsWith("/dashboard/deployment"), badge: sidebarCounts.pendingCommits },
     // Work
     { featureKey: "projects", section: "Work", title: "Projects", url: "/dashboard/projects", icon: Briefcase, isActive: pathname.startsWith("/dashboard/projects") && !pathname.includes("/plans") },
     { featureKey: "plans", section: "Work", title: "Documents", url: "/dashboard/projects/plans", icon: FileText, isActive: pathname.includes("/plans"), badge: sidebarCounts.plans },
@@ -756,17 +746,13 @@ export function AppSidebar({
   const orgSettingsActive = pathname === "/dashboard/settings"
 
   return (
-    <Sidebar collapsible="icon" className="border-r bg-background shadow-none" {...props}>
+    <Sidebar collapsible="icon" className="border-r bg-background shadow-none print:hidden" {...props}>
       <SidebarHeader className="!gap-0 !p-2 border-b bg-background/50 backdrop-blur-sm h-auto min-h-0 shrink-0">
         <SidebarMenu className="gap-0">
           <SidebarMenuItem>
             <SidebarMenuButton size="sm" className="hover:bg-transparent !h-9 min-h-9 px-1 group-data-[collapsible=icon]:!h-8 group-data-[collapsible=icon]:!w-8 group-data-[collapsible=icon]:!p-0">
               <div className="flex aspect-square size-7 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm text-xs group-data-[collapsible=icon]:mx-auto overflow-hidden">
-                {profile?.logoUrl ? (
-                  <img src={profile.logoUrl} alt="Logo" className="w-full h-full object-contain bg-white" />
-                ) : (
-                  <span className="font-bold">{profile?.companyName?.[0] || "K"}</span>
-                )}
+                <img src="/header_logo.png" alt="Logo" className="w-full h-full object-contain bg-white" />
               </div>
               <div className="grid flex-1 text-left text-xs leading-tight ml-1.5 group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-semibold text-foreground">

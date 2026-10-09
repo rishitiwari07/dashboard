@@ -40,20 +40,10 @@ export async function GET(req: NextRequest) {
   if (statusFilter) filter.status = statusFilter;
   if (approvalStatusFilter) filter.approvalStatus = approvalStatusFilter;
 
-  if (user.role === "admin") {
+  if (user.role === "admin" || user.role === "employee") {
     if (employeeIdFromQuery) {
       filter.employee = employeeIdFromQuery;
     }
-  } else if (user.role === "employee") {
-    // Limit employees to only their own attendance
-    const employee = await Employee.findOne({ email: user.email }).lean();
-    if (!employee) {
-      return NextResponse.json(
-        { message: "Employee profile not found for this user" },
-        { status: 404 }
-      );
-    }
-    filter.employee = employee._id;
   } else {
     // Other roles (client/lead) currently have no attendance access
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
@@ -122,10 +112,9 @@ export async function POST(req: NextRequest) {
     leaveTo?: string;
   };
 
-  let employee;
+  let employee: any = null;
 
-  if (user.role === "admin") {
-    // Admin can create for another employee (employeeId provided) or for self (no employeeId → lookup by email)
+  if (user.role === "admin" || user.role === "employee") {
     if (employeeId) {
       employee = await Employee.findById(employeeId);
       if (!employee) {
@@ -135,24 +124,21 @@ export async function POST(req: NextRequest) {
         );
       }
     } else {
-      // Self-attendance: admin is also an employee
       employee = await Employee.findOne({ email: user.email });
       if (!employee) {
         return NextResponse.json(
-          { message: "Employee profile not found for this user. Add yourself in Team members to use attendance." },
+          { message: "Employee profile not found for this user." },
           { status: 404 }
         );
       }
     }
-  } else {
-    // Employees use their own employee record
-    employee = await Employee.findOne({ email: user.email });
-    if (!employee) {
-      return NextResponse.json(
-        { message: "Employee profile not found for this user" },
-        { status: 404 }
-      );
-    }
+  }
+
+  if (!employee) {
+    return NextResponse.json(
+      { message: "Employee not resolved" },
+      { status: 400 }
+    );
   }
 
   if (!date || !status) {

@@ -307,7 +307,7 @@ export function InvoicesPageClient({ invoices: initialInvoices, clients, project
 
   // ─── Save ─────────────────────────────────────────────────────────────
 
-  async function handleSave(statusOverride?: string) {
+  async function handleSave(statusOverride?: string, openPrint?: boolean) {
     setSaving(true);
     try {
       const payload = {
@@ -329,7 +329,12 @@ export function InvoicesPageClient({ invoices: initialInvoices, clients, project
       const url = editingId ? `/api/invoices/${editingId}` : "/api/invoices";
       const res = await fetch(url, { method: editingId ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Failed"); }
+      const data = await res.json();
+      const savedId = data?.invoice?.id || data?.invoice?._id || editingId;
       toast.success(editingId ? "Invoice updated" : "Invoice created");
+      if (openPrint && savedId) {
+        window.open(`/invoices/${savedId}/view`, "_blank");
+      }
       router.refresh();
       setForm(freshForm(companyProfile)); setEditingId(null); setActiveTab("list"); setStep(1);
       router.push("/dashboard/invoices");
@@ -1094,7 +1099,15 @@ export function InvoicesPageClient({ invoices: initialInvoices, clients, project
               </Card>
 
               {/* Live preview */}
-              <div ref={printRef}>
+              <div ref={printRef} className="invoice-print-container">
+                <style dangerouslySetInnerHTML={{__html: `
+                  @media print {
+                    body * { visibility: hidden; }
+                    .invoice-print-container, .invoice-print-container * { visibility: visible; }
+                    .invoice-print-container { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+                    @page { size: A4; margin: 15mm; }
+                  }
+                `}} />
                 <InvoiceRenderer invoice={buildPreview()} profile={companyProfile} />
               </div>
 
@@ -1167,12 +1180,14 @@ export function InvoicesPageClient({ invoices: initialInvoices, clients, project
                 </CollapsibleContent>
               </Collapsible>
 
-              {/* Actions */}
               <div className="flex justify-between items-center border-t pt-4">
                 <Button variant="outline" onClick={() => setStep(2)} className="gap-2"><ArrowLeft className="h-4 w-4" /> Back</Button>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => handleSave("draft")} disabled={saving} className="gap-2">
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Draft
+                  </Button>
+                  <Button variant="outline" onClick={() => handleSave("draft", true)} disabled={saving} className="gap-2">
+                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Printer className="h-4 w-4" />} Save & Print
                   </Button>
                   <Button onClick={() => handleSave("sent")} disabled={saving} className="gap-2">
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Save & Send
@@ -1200,8 +1215,8 @@ export function InvoicesPageClient({ invoices: initialInvoices, clients, project
                   )}
                   <Button variant="outline" size="sm" onClick={() => startEdit(viewingInvoice)} className="gap-1.5"><Edit className="h-3.5 w-3.5" /> Edit</Button>
                   <Button variant="outline" size="sm" onClick={() => window.open(`/invoices/${viewingInvoice.id}/view`, "_blank")} className="gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Full Page</Button>
-                  <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-1.5"><Printer className="h-3.5 w-3.5" /> Print</Button>
-                  <Button variant="outline" size="sm" onClick={() => { toast.info("Use Print > Save as PDF"); setTimeout(() => window.print(), 500); }} className="gap-1.5"><Download className="h-3.5 w-3.5" /> PDF</Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open(`/invoices/${viewingInvoice.id}/view`, "_blank")} className="gap-1.5"><Printer className="h-3.5 w-3.5" /> Print</Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open(`/invoices/${viewingInvoice.id}/view`, "_blank")} className="gap-1.5"><Download className="h-3.5 w-3.5" /> PDF</Button>
                 </div>
               </div>
               <InvoiceRenderer invoice={viewingInvoice} profile={companyProfile} />

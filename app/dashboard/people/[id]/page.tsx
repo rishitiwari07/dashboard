@@ -87,6 +87,17 @@ export default async function EmployeeDetailPage({
     });
   }
 
+  function safeIsoDate(value?: Date | string | null): string | null {
+    if (!value) return null;
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return null;
+    try {
+      return d.toISOString().slice(0, 10);
+    } catch {
+      return null;
+    }
+  }
+
   const initials = employee.name
     .split(" ")
     .map((p: string) => p[0])
@@ -163,9 +174,7 @@ export default async function EmployeeDetailPage({
                     manager: employee.manager || "",
                     employeeId: employee.employeeId?.toString() ?? "",
                     avatarUrl: employee.avatarUrl || "",
-                    dateOfHiring: employee.dateOfHiring
-                      ? new Date(employee.dateOfHiring).toISOString().slice(0, 10)
-                      : "",
+                    dateOfHiring: safeIsoDate(employee.dateOfHiring) || "",
                     assignedProduct: employee.assignedProduct || "",
                     assignedService: employee.assignedService || "",
                     profileSlug: (employee as any).profileSlug || "",
@@ -688,11 +697,7 @@ export default async function EmployeeDetailPage({
           <EmployeePayslipsSection
             employeeId={String(employee._id)}
             isAdmin={user.role === "admin"}
-            dateOfHiring={
-              employee.dateOfHiring
-                ? new Date(employee.dateOfHiring).toISOString().slice(0, 10)
-                : null
-            }
+            dateOfHiring={safeIsoDate(employee.dateOfHiring)}
           />
         </div>
 
@@ -700,11 +705,7 @@ export default async function EmployeeDetailPage({
           <EmployeeReimbursementSection
             employeeId={String(employee._id)}
             isAdmin={user.role === "admin"}
-            dateOfHiring={
-              employee.dateOfHiring
-                ? new Date(employee.dateOfHiring).toISOString().slice(0, 10)
-                : null
-            }
+            dateOfHiring={safeIsoDate(employee.dateOfHiring)}
           />
         </div>
 

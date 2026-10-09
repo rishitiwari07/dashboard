@@ -27,12 +27,12 @@ export function buildInvoiceNumber(
   region: ClientRegion,
   date = new Date()
 ): { invoiceNumber: string; serialField: string } {
-  const month = date.toLocaleString("en-US", { month: "long" });
+  const month = date.toLocaleString("en-US", { month: "short" });
   const isInternational = region === "international";
 
   const prefix = isInternational
-    ? settings?.internationalInvoicePrefix || "INT"
-    : settings?.invoicePrefix || "INV";
+    ? settings?.internationalInvoicePrefix || "WWS"
+    : settings?.invoicePrefix || "WWS";
 
   const serial = isInternational
     ? settings?.internationalNextSerial || 1
@@ -43,7 +43,7 @@ export function buildInvoiceNumber(
     : "invoiceSettings.nextSerial";
 
   return {
-    invoiceNumber: `${prefix}/${month}/${String(serial).padStart(3, "0")}`,
+    invoiceNumber: `${prefix}/${month}/${String(serial).padStart(4, "0")}`,
     serialField,
   };
 }

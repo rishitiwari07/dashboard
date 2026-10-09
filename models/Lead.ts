@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export type LeadStatus = "new" | "contacted" | "qualified" | "converted" | "lost";
+export type LeadStatus = "new" | "contacted" | "interested" | "converted" | "rejected";
 
 export interface ILead extends Document {
   // Contact
@@ -28,6 +28,8 @@ export interface ILead extends Document {
   status: LeadStatus;
   notes?: string;
   adminNotes?: string;
+  // Assignment
+  assignedTo?: mongoose.Types.ObjectId | null;
 
   // Conversion
   convertedClientId?: mongoose.Types.ObjectId | null;
@@ -59,11 +61,12 @@ const LeadSchema: Schema<ILead> = new Schema(
 
     status: {
       type: String,
-      enum: ["new", "contacted", "qualified", "converted", "lost"],
+      enum: ["new", "contacted", "interested", "converted", "rejected"],
       default: "new",
     },
     notes: String,
     adminNotes: String,
+    assignedTo: { type: Schema.Types.ObjectId, ref: "Employee", default: null },
 
     convertedClientId: { type: Schema.Types.ObjectId, ref: "Client", default: null },
     convertedAt: Date,

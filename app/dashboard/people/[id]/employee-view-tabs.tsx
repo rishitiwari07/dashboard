@@ -76,7 +76,7 @@ export function EmployeeViewTabs({ children }: { children: React.ReactNode }) {
         </TabsTrigger>
         <TabsTrigger value="reimbursement" className="gap-2">
           <Receipt className="h-4 w-4" />
-          Reimbursement
+          Expenses
         </TabsTrigger>
         <TabsTrigger value="assets" className="gap-2">
           <Package className="h-4 w-4" />

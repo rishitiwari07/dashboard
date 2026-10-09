@@ -39,6 +39,7 @@ import {
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   title: z.string().optional(),
   department: z.string().optional(),
   location: z.string().optional(),
@@ -76,6 +77,7 @@ export function AddEmployeeDialog() {
     defaultValues: {
       name: "",
       email: "",
+      password: "",
       title: "",
       department: "",
       location: "",
@@ -146,7 +148,7 @@ export function AddEmployeeDialog() {
             <p className="text-xs font-mono bg-muted/50 p-2 rounded break-all">
               Email: {creds.email}
             </p>
-            <p className="text-xs text-muted-foreground">They can sign in with email OTP.</p>
+            <p className="text-xs text-muted-foreground">They can sign in with the provided password.</p>
           </div>,
           { duration: 9000 }
         );
@@ -210,6 +212,19 @@ export function AddEmployeeDialog() {
                   )}
                 />
               </div>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Login Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter a password" type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="avatarUrl"

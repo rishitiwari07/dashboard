@@ -142,7 +142,7 @@ export async function PATCH(
 
   // Regular status / notes update
   if (status) {
-    const validStatuses = ["new", "contacted", "qualified", "converted", "lost"];
+    const validStatuses = ["new", "contacted", "interested", "converted", "rejected"];
     if (!validStatuses.includes(status)) {
       return NextResponse.json(
         { message: "Invalid status" },

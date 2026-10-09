@@ -97,9 +97,9 @@ export async function GET(req: Request) {
     all: allLeads.length,
     new: allLeads.filter((l) => l.status === "new").length,
     contacted: allLeads.filter((l) => l.status === "contacted").length,
-    qualified: allLeads.filter((l) => l.status === "qualified").length,
+    interested: allLeads.filter((l) => l.status === "interested").length,
     converted: allLeads.filter((l) => l.status === "converted").length,
-    lost: allLeads.filter((l) => l.status === "lost").length,
+    rejected: allLeads.filter((l) => l.status === "rejected").length,
   };
 
   return NextResponse.json({ leads: serialized, counts });

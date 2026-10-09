@@ -65,7 +65,7 @@ export default function LoginPage() {
               <Lock className="h-5 w-5" />
             </div>
             <h1 className="text-xl font-bold tracking-tight text-neutral-900">
-              Workspace Console
+              WebWrite Internal
             </h1>
             <p className="text-xs text-neutral-500 mt-1">
               Sign in with your User ID and password
@@ -84,7 +84,7 @@ export default function LoginPage() {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   className="w-full rounded-xl border border-neutral-300 bg-neutral-50/50 pl-10 pr-3.5 py-2.5 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus:bg-white focus:ring-1 focus:ring-neutral-900"
-                  placeholder="admin@kalp.ltd"
+                  placeholder="you@webwrite.in"
                   autoComplete="username"
                   required
                 />

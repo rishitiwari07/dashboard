@@ -30,11 +30,11 @@ export const viewport: Viewport = {
 const defaultMetadata: Metadata = {
   metadataBase: getBaseUrl(),
   title: {
-    default: "Webwrite",
-    template: "%s | Webwrite",
+    default: "WebWrite Services",
+    template: "%s | WebWrite Services",
   },
   description:
-    "Born to create innovative products. Building modern SaaS, AI solutions, mobile apps, and digital products.",
+    "WebWrite Services — Building modern SaaS, AI solutions, mobile apps, and digital products.",
   robots: { index: true, follow: true },
   manifest: "/manifest.json",
   icons: {
@@ -45,7 +45,7 @@ const defaultMetadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Webwrite",
+    title: "WebWrite Services",
   },
   formatDetection: { telephone: false },
 };

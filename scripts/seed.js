@@ -30,7 +30,7 @@ loadEnv();
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/webwrite";
 const ADMIN_EMAIL =
-  process.argv[2] || process.env.SEED_ADMIN_EMAIL || "admin@kalp.ltd";
+  process.argv[2] || process.env.SEED_ADMIN_EMAIL || "you@webwrite.in";
 const ADMIN_PASSWORD =
   process.argv[3] || process.env.SEED_ADMIN_PASSWORD || "admin123";
 const ADMIN_NAME = process.argv[4] || "Admin";

@@ -190,7 +190,7 @@ function ProTpl({ inv, p }: { inv: InvoiceData; p: any }) {
         {/* Header: Sender + Invoice meta */}
         <div className="invoice-section flex justify-between items-start gap-4">
           <div className="flex-1 min-w-0">
-            {p?.logoUrl && <img src={p.logoUrl} alt="" className="h-12 print:h-8 w-auto mb-2" />}
+            <img src={p?.logoUrl || "/header_logo.png"} alt="" className="h-12 print:h-8 w-auto mb-2" />
             <h1 className="text-2xl print:text-xl font-bold leading-tight">{inv.sender?.name}</h1>
             <p className="text-sm print:text-xs text-gray-600 font-medium">{inv.invoiceDocumentType === "proforma" ? "Proforma Invoice" : "Tax Invoice"}</p>
           </div>
@@ -271,7 +271,7 @@ function ModernTpl({ inv, p }: { inv: InvoiceData; p: any }) {
       <div className="p-10 print:p-5 space-y-8 print:space-y-4">
         <div className="invoice-section flex justify-between items-start gap-4">
           <div className="flex-1 min-w-0">
-            {p?.logoUrl ? <img src={p.logoUrl} alt="" className="h-14 print:h-10 w-auto mb-3 print:mb-1" /> : <h1 className="text-3xl print:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{inv.sender?.name}</h1>}
+            {p?.logoUrl ? <img src={p.logoUrl} alt="" className="h-14 print:h-10 w-auto mb-3 print:mb-1" /> : <img src="/header_logo.png" alt="" className="h-14 print:h-10 w-auto mb-3 print:mb-1" />}
             <div className="text-sm print:text-xs text-gray-500 mt-2 print:mt-1 space-y-0.5"><p>{inv.sender?.address}</p><p>{inv.sender?.email} | {inv.sender?.phone}</p>{inv.sender?.gstNumber && <p>GSTIN: {inv.sender.gstNumber}</p>}</div>
           </div>
           <div className="text-right shrink-0"><h2 className="text-4xl print:text-2xl font-extralight tracking-wider text-gray-800 mb-3 print:mb-1">{inv.invoiceDocumentType === "proforma" ? "PROFORMA INVOICE" : "INVOICE"}</h2><p className="font-medium text-gray-700">{inv.invoiceNumber}</p><p className="text-sm print:text-xs text-gray-500">{new Date(inv.invoiceDate).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</p></div>
@@ -302,7 +302,7 @@ function ClassicTpl({ inv, p }: { inv: InvoiceData; p: any }) {
   return (
     <div className="bg-white border text-black print:border-none print:shadow-none shadow-sm print:text-[11px]">
       <div className="p-8 print:p-5 space-y-5 print:space-y-3">
-        <div className="invoice-section text-center border-b-2 border-black pb-3 print:pb-2">{p?.logoUrl && <img src={p.logoUrl} alt="" className="h-12 print:h-8 w-auto mx-auto mb-2" />}<h1 className="text-2xl print:text-lg font-bold uppercase tracking-wider">{inv.sender?.name}</h1><p className="text-sm print:text-xs mt-1">{inv.sender?.address}</p>{inv.sender?.gstNumber && <p className="text-sm print:text-xs font-medium mt-1">GSTIN: {inv.sender.gstNumber}</p>}</div>
+        <div className="invoice-section text-center border-b-2 border-black pb-3 print:pb-2"><img src={p?.logoUrl || "/header_logo.png"} alt="" className="h-12 print:h-8 w-auto mx-auto mb-2" /><h1 className="text-2xl print:text-lg font-bold uppercase tracking-wider">{inv.sender?.name}</h1><p className="text-sm print:text-xs mt-1">{inv.sender?.address}</p>{inv.sender?.gstNumber && <p className="text-sm print:text-xs font-medium mt-1">GSTIN: {inv.sender.gstNumber}</p>}</div>
         <h2 className="text-center text-xl print:text-base font-bold border border-black py-1.5">{inv.invoiceDocumentType === "proforma" ? "PROFORMA INVOICE" : "TAX INVOICE"}</h2>
         <div className="invoice-section grid grid-cols-2 gap-4 print:gap-3">
           <div className="border p-3 print:p-2 text-sm print:text-xs space-y-0.5"><p><strong>Invoice No:</strong> {inv.invoiceNumber}</p><p><strong>Date:</strong> {new Date(inv.invoiceDate).toLocaleDateString("en-IN")}</p>{inv.uin && <p><strong>UIN:</strong> {inv.uin}</p>}</div>

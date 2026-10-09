@@ -12,14 +12,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";
 import { SearchProvider } from "@/components/search-context";
@@ -129,26 +121,23 @@ export default async function DashboardLayout({
         <PrivacyProvider>
           <SidebarProvider>
             <AppSidebar user={{ ...user, userId: user.userId }} profile={profile} />
-            <SidebarInset className="bg-[#F7F5F1] flex h-svh min-h-0 min-w-0 flex-1 flex-col overflow-hidden text-sm text-foreground [&_.text-3xl]:!text-2xl [&_.text-2xl]:!text-xl [&_.text-xl]:!text-lg [&_.text-lg]:!text-base">
-              <header className="flex h-11 shrink-0 items-center justify-between gap-2 border-b bg-background px-3 md:px-4">
+            <SidebarInset className="bg-[#F7F5F1] flex h-svh min-h-0 min-w-0 flex-1 flex-col overflow-hidden print:overflow-visible print:h-auto text-sm text-foreground [&_.text-3xl]:!text-2xl [&_.text-2xl]:!text-xl [&_.text-xl]:!text-lg [&_.text-lg]:!text-base">
+              <header className="flex h-11 shrink-0 items-center justify-between gap-2 border-b bg-background px-3 md:px-4 print:hidden">
                 <div className="flex items-center gap-2">
                   <SidebarTrigger className="-ml-1" />
                   <Separator orientation="vertical" className="mr-2 h-4" />
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem>
-                        <BreadcrumbPage className="font-semibold text-foreground/80">Workspace Console</BreadcrumbPage>
-                      </BreadcrumbItem>
-                    </BreadcrumbList>
-                  </Breadcrumb>
+                  <div className="flex items-center gap-2 font-semibold text-foreground/80">
+                    <img src="/header_logo.png" alt="WebWrite" className="h-5 w-auto object-contain" />
+                    <span>WebWrite Internal</span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <DashboardTopbar />
                 </div>
               </header>
-              <main className="min-h-0 min-w-0 flex-1 overflow-auto scrollbar-none px-1 py-1 md:px-2 md:py-2">
-                <div className="min-w-0 w-full max-w-full">
-                  <div className="min-h-0 min-w-0 w-full overflow-x-auto rounded-xl border bg-background p-2 shadow-sm md:rounded-2xl md:p-3">
+              <main className="min-h-0 min-w-0 flex-1 overflow-auto print:overflow-visible print:h-auto scrollbar-none px-1 py-1 md:px-2 md:py-2">
+                <div className="min-w-0 w-full max-w-full print:block">
+                  <div className="min-h-0 min-w-0 w-full overflow-x-auto print:overflow-visible rounded-xl border bg-background p-2 shadow-sm md:rounded-2xl md:p-3 print:border-none print:shadow-none print:bg-transparent">
                     {children}
                   </div>
                 </div>

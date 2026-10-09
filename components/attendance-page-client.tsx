@@ -90,7 +90,7 @@ export function AttendancePageClient({ userRole, employeeId, userEmail }: Props)
   } | null>(null);
 
   async function loadEmployees() {
-    if (userRole !== "admin") return;
+    if (userRole !== "admin" && userRole !== "employee") return;
     try {
       const res = await fetch("/api/employees");
       const data = await res.json();
@@ -107,7 +107,7 @@ export function AttendancePageClient({ userRole, employeeId, userEmail }: Props)
     setError(null);
     try {
       const params = new URLSearchParams();
-      if (userRole === "admin" && selectedEmployeeId) {
+      if ((userRole === "admin" || userRole === "employee") && selectedEmployeeId) {
         params.set("employeeId", selectedEmployeeId);
       }
       const res = await fetch(
@@ -217,7 +217,7 @@ export function AttendancePageClient({ userRole, employeeId, userEmail }: Props)
 
   useEffect(() => {
     loadRecords();
-    if (userRole === "admin") {
+    if ((userRole === "admin" || userRole === "employee")) {
       loadSelectedEmployee();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -261,7 +261,7 @@ export function AttendancePageClient({ userRole, employeeId, userEmail }: Props)
     e.preventDefault();
     if (userRole !== "employee" && userRole !== "admin") return;
 
-    if (!editingId && userRole === "admin" && !selectedEmployeeId) {
+    if (!editingId && (userRole === "admin" || userRole === "employee") && !selectedEmployeeId) {
       setError("Please select an employee");
       return;
     }
@@ -308,7 +308,7 @@ export function AttendancePageClient({ userRole, employeeId, userEmail }: Props)
             leaveType: leaveType || undefined,
             reason: reason || undefined,
           };
-          if (userRole === "admin" && selectedEmployeeId) {
+          if ((userRole === "admin" || userRole === "employee") && selectedEmployeeId) {
             body.employeeId = selectedEmployeeId;
           }
           const res = await fetch("/api/attendance", {
@@ -334,7 +334,7 @@ export function AttendancePageClient({ userRole, employeeId, userEmail }: Props)
           reason: reason || undefined,
         };
 
-        if (!isEditing && userRole === "admin" && selectedEmployeeId) {
+        if (!isEditing && (userRole === "admin" || userRole === "employee") && selectedEmployeeId) {
           body.employeeId = selectedEmployeeId;
         }
 
@@ -371,7 +371,7 @@ export function AttendancePageClient({ userRole, employeeId, userEmail }: Props)
       setEditingId(null);
       await loadRecords();
       await loadCurrentEmployee();
-      if (userRole === "admin") {
+      if ((userRole === "admin" || userRole === "employee")) {
         await loadSelectedEmployee();
       }
     } catch {
@@ -497,7 +497,7 @@ export function AttendancePageClient({ userRole, employeeId, userEmail }: Props)
   }
 
   const isEmployee = userRole === "employee";
-  const isAdmin = userRole === "admin";
+  const isAdmin = (userRole === "admin" || userRole === "employee");
   // Admin can do self-attendance when they have an employee profile and are viewing their own record
   const isAdminSelf =
     isAdmin &&

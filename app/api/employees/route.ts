@@ -79,6 +79,7 @@ export async function POST(req: Request) {
   const {
     name,
     email,
+    password,
     title,
     department,
     location,
@@ -102,9 +103,9 @@ export async function POST(req: Request) {
 
   const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 
-  if (!name || !normalizedEmail) {
+  if (!name || !normalizedEmail || !password) {
     return NextResponse.json(
-      { message: "Name and email are required" },
+      { message: "Name, email, and password are required" },
       { status: 400 }
     );
   }
@@ -125,8 +126,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const bootstrapPassword = generateTemporaryPassword(10);
-  const hashedPassword = await hashPassword(bootstrapPassword);
+  const hashedPassword = await hashPassword(password);
 
   await User.create({
     email: normalizedEmail,
@@ -176,7 +176,7 @@ export async function POST(req: Request) {
       },
       loginCredentials: {
         email: created.email,
-        message: "Employee can sign in with email OTP.",
+        message: "Employee can sign in with the provided password.",
       },
     },
     { status: 201 }

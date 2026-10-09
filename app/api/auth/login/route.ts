@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
     const trimmedIdentifier = String(identifier).trim().toLowerCase();
 
-    // Match by email or MongoDB _id if valid
+    // Match by email first
     const query: any = {
       $or: [
         { email: trimmedIdentifier },
@@ -29,7 +29,23 @@ export async function POST(req: NextRequest) {
       ],
     };
 
-    const user = await User.findOne(query);
+    let user = await User.findOne(query);
+
+    // If not found by email, try matching by numeric employeeId in Employee model
+    if (!user) {
+      const numericId = Number(trimmedIdentifier);
+      if (!isNaN(numericId) && numericId > 0) {
+        try {
+          const { Employee } = await import("@/models/Employee");
+          const emp = await Employee.findOne({ employeeId: numericId }).select("email").lean();
+          if (emp?.email) {
+            user = await User.findOne({ email: emp.email });
+          }
+        } catch {
+          // ignore if employee lookup fails
+        }
+      }
+    }
 
     if (!user) {
       return NextResponse.json(

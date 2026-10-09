@@ -41,6 +41,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Plus } from "lucide-react";
 
 type Lead = {
   id: string;
@@ -72,26 +82,26 @@ type Counts = {
   all: number;
   new: number;
   contacted: number;
-  qualified: number;
+  interested: number;
   converted: number;
-  lost: number;
+  rejected: number;
 };
 
 const STATUS_CONFIG: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; className?: string }> = {
   new: { label: "New", variant: "default", className: "bg-blue-600" },
   contacted: { label: "Contacted", variant: "default", className: "bg-amber-600" },
-  qualified: { label: "Qualified", variant: "default", className: "bg-purple-600" },
+  interested: { label: "Interested", variant: "default", className: "bg-purple-600" },
   converted: { label: "Converted", variant: "default", className: "bg-emerald-600" },
-  lost: { label: "Lost", variant: "secondary" },
+  rejected: { label: "Rejected", variant: "secondary" },
 };
 
 const FILTER_TABS = [
   { key: "all", label: "All" },
   { key: "new", label: "New" },
   { key: "contacted", label: "Contacted" },
-  { key: "qualified", label: "Qualified" },
+  { key: "interested", label: "Interested" },
   { key: "converted", label: "Converted" },
-  { key: "lost", label: "Lost" },
+  { key: "rejected", label: "Rejected" },
 ];
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -99,7 +109,7 @@ import { toast } from "sonner";
 
 export function LeadsPageClient() {
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [counts, setCounts] = useState<Counts>({ all: 0, new: 0, contacted: 0, qualified: 0, converted: 0, lost: 0 });
+  const [counts, setCounts] = useState<Counts>({ all: 0, new: 0, contacted: 0, interested: 0, converted: 0, rejected: 0 });
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -110,6 +120,40 @@ export function LeadsPageClient() {
   // Dialog states
   const [convertTargetId, setConvertTargetId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [addLeadOpen, setAddLeadOpen] = useState(false);
+  const [addLeadSaving, setAddLeadSaving] = useState(false);
+  const [newLead, setNewLead] = useState({
+    name: "", email: "", phone: "", companyName: "", designation: "",
+    source: "manual", budget: "", timeline: "", projectDescription: "", notes: "",
+  });
+
+  async function saveNewLead() {
+    if (!newLead.name.trim() || !newLead.email.trim()) {
+      toast.error("Name and email are required");
+      return;
+    }
+    setAddLeadSaving(true);
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...newLead, source: "manual" }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Lead added successfully!");
+        setAddLeadOpen(false);
+        setNewLead({ name: "", email: "", phone: "", companyName: "", designation: "", source: "manual", budget: "", timeline: "", projectDescription: "", notes: "" });
+        fetchLeads();
+      } else {
+        toast.error(data.message || "Failed to add lead");
+      }
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setAddLeadSaving(false);
+    }
+  }
 
   const fetchLeads = useCallback(async () => {
     setLoading(true);
@@ -122,7 +166,7 @@ export function LeadsPageClient() {
       const res = await fetch(`/api/leads?${params.toString()}`);
       const data = await res.json();
       setLeads(data.leads || []);
-      setCounts(data.counts || { all: 0, new: 0, contacted: 0, qualified: 0, converted: 0, lost: 0 });
+      setCounts(data.counts || { all: 0, new: 0, contacted: 0, interested: 0, converted: 0, rejected: 0 });
     } catch {
       setLeads([]);
     } finally {
@@ -279,7 +323,7 @@ export function LeadsPageClient() {
           />
         </div>
 
-        {/* Sort */}
+        {/* Sort + Add */}
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -290,8 +334,60 @@ export function LeadsPageClient() {
             <ArrowUpDown className="h-3.5 w-3.5" />
             {sort === "newest" ? "Newest first" : "Oldest first"}
           </Button>
+          <Button size="sm" className="rounded-xl gap-1.5" onClick={() => setAddLeadOpen(true)}>
+            <Plus className="h-3.5 w-3.5" /> Add Lead
+          </Button>
         </div>
       </div>
+
+      {/* Add Lead Dialog */}
+      <Dialog open={addLeadOpen} onOpenChange={setAddLeadOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add Lead Manually</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3 py-2">
+            <div className="space-y-1">
+              <Label className="text-xs">Name *</Label>
+              <Input placeholder="Full Name" value={newLead.name} onChange={e => setNewLead(n => ({ ...n, name: e.target.value }))} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Email *</Label>
+              <Input type="email" placeholder="email@example.com" value={newLead.email} onChange={e => setNewLead(n => ({ ...n, email: e.target.value }))} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Phone</Label>
+              <Input placeholder="+91 98765 43210" value={newLead.phone} onChange={e => setNewLead(n => ({ ...n, phone: e.target.value }))} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Company Name</Label>
+              <Input placeholder="Company" value={newLead.companyName} onChange={e => setNewLead(n => ({ ...n, companyName: e.target.value }))} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Designation</Label>
+              <Input placeholder="CEO, Manager…" value={newLead.designation} onChange={e => setNewLead(n => ({ ...n, designation: e.target.value }))} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Budget</Label>
+              <Input placeholder="e.g. ₹50,000" value={newLead.budget} onChange={e => setNewLead(n => ({ ...n, budget: e.target.value }))} />
+            </div>
+            <div className="col-span-2 space-y-1">
+              <Label className="text-xs">Project Description</Label>
+              <Textarea placeholder="Briefly describe the project…" rows={2} value={newLead.projectDescription} onChange={e => setNewLead(n => ({ ...n, projectDescription: e.target.value }))} />
+            </div>
+            <div className="col-span-2 space-y-1">
+              <Label className="text-xs">Initial Notes / Follow-up</Label>
+              <Textarea placeholder="Any initial notes or follow-up action…" rows={2} value={newLead.notes} onChange={e => setNewLead(n => ({ ...n, notes: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddLeadOpen(false)}>Cancel</Button>
+            <Button onClick={saveNewLead} disabled={addLeadSaving}>
+              {addLeadSaving ? "Saving…" : "Add Lead"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Status filter tabs */}
       <div className="flex flex-wrap items-center gap-2">
@@ -436,24 +532,24 @@ export function LeadsPageClient() {
                                       Mark as Contacted
                                     </DropdownMenuItem>
                                   )}
-                                  {lead.status !== "qualified" && (
+                                  {lead.status !== "interested" && (
                                     <DropdownMenuItem
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        updateLeadStatus(lead.id, "qualified");
+                                        updateLeadStatus(lead.id, "interested");
                                       }}
                                     >
-                                      Mark as Qualified
+                                      Mark as Interested
                                     </DropdownMenuItem>
                                   )}
-                                  {lead.status !== "lost" && (
+                                  {lead.status !== "rejected" && (
                                     <DropdownMenuItem
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        updateLeadStatus(lead.id, "lost");
+                                        updateLeadStatus(lead.id, "rejected");
                                       }}
                                     >
-                                      Mark as Lost
+                                      Mark as Rejected
                                     </DropdownMenuItem>
                                   )}
                                   {lead.status !== "new" && (

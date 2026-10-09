@@ -665,7 +665,7 @@ export function EmployeeReimbursementSection({ employeeId, isAdmin, dateOfHiring
         <CardHeader className="flex flex-row items-center justify-between pb-2 gap-2 min-w-0 flex-wrap">
           <div className="space-y-1">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Receipt className="h-4 w-4 text-primary" /> Reimbursement
+              <Receipt className="h-4 w-4 text-primary" /> Expenses & Reimbursements
             </CardTitle>
             <CardDescription>
               {dateOfHiring

@@ -227,7 +227,7 @@ const SOCIAL_PROGRESS_STATUS_OPTIONS: Array<{ id: SocialMediaProgressStatus; lab
 ];
 
 function getTaskTicket(taskId: string) {
-  return `KLP-${taskId.slice(-6).toUpperCase()}`;
+  return `WWS-${taskId.slice(-6).toUpperCase()}`;
 }
 
 const DEFAULT_BOARD_COLUMNS = [
